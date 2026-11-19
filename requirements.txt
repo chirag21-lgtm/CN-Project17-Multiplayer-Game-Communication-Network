@@ -1,0 +1,7 @@
+# Python dependencies (pip). System packages (mininet, openvswitch-switch, iperf,
+# netcat-openbsd) are installed by setup.sh via apt.
+# Tested with Python 3.9 in a virtual environment (.venv-ryu)
+setuptools==67.6.1
+eventlet==0.30.2
+ryu==4.34
+matplotlib

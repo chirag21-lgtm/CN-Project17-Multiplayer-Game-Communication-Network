@@ -1,0 +1,13 @@
+[server 20:36:54] registration socket on UDP 5001
+[server 20:36:54] game socket on UDP 5000
+[server 20:36:58] REGISTERED p3 (10.0.0.3)
+[server 20:36:58] REGISTERED p2 (10.0.0.2)
+[server 20:36:58] REGISTERED p1 (10.0.0.1)
+[server 20:37:04] REGISTERED p1 (10.0.0.1)
+[server 20:37:04] REGISTERED p2 (10.0.0.2)
+[server 20:37:20] REGISTERED p2 (10.0.0.2)
+[server 20:37:20] REGISTERED p1 (10.0.0.1)
+[server 20:37:31] ------- SUMMARY -------
+[server 20:37:31] p3: received=30 lost=0 last_pos=('39', '52')
+[server 20:37:31] p2: received=150 lost=0 last_pos=('65', '77')
+[server 20:37:31] p1: received=150 lost=0 last_pos=('77', '7')

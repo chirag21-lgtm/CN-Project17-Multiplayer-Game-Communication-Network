@@ -1,0 +1,96 @@
+=== TEST 1: connectivity (pingall) - expect 0% dropped ===
+dropped: 0.0%
+
+=== TEST 2: UNAUTHORIZED p3 plays without registering - expect 100% loss ===
+[('p3', 10, 0, 100.0, 0.0, 0.0)]
+
+=== TEST 3: p1,p2,p3 register and play, NO congestion - expect 0% loss ===
+[('p1', 30, 30, 0.0, 0.62, 0.25), ('p2', 30, 30, 0.0, 0.61, 0.27), ('p3', 30, 30, 0.0, 0.61, 0.24)]
+
+Flow table (priority=30 rules = one per registered player, no set_queue yet):
+OFPST_FLOW reply (OF1.3) (xid=0x2):
+ cookie=0x0, duration=3.392s, table=0, n_packets=27, n_bytes=2031, priority=30,udp,nw_src=10.0.0.2,nw_dst=10.0.0.10,tp_dst=5000 actions=output:1
+ cookie=0x0, duration=3.392s, table=0, n_packets=27, n_bytes=2036, priority=30,udp,nw_src=10.0.0.3,nw_dst=10.0.0.10,tp_dst=5000 actions=output:1
+ cookie=0x0, duration=3.392s, table=0, n_packets=27, n_bytes=2030, priority=30,udp,nw_src=10.0.0.1,nw_dst=10.0.0.10,tp_dst=5000 actions=output:1
+ cookie=0x0, duration=10.620s, table=0, n_packets=0, n_bytes=0, priority=10,udp,nw_dst=10.0.0.10,tp_src=5001 actions=output:1
+ cookie=0x0, duration=10.620s, table=0, n_packets=1, n_bytes=45, priority=10,udp,nw_dst=10.0.0.1,tp_src=5001 actions=output:2
+ cookie=0x0, duration=10.620s, table=0, n_packets=1, n_bytes=45, priority=10,udp,nw_dst=10.0.0.2,tp_src=5001 actions=output:3
+ cookie=0x0, duration=10.620s, table=0, n_packets=1, n_bytes=45, priority=10,udp,nw_dst=10.0.0.3,tp_src=5001 actions=output:4
+ cookie=0x0, duration=10.620s, table=0, n_packets=0, n_bytes=0, priority=10,udp,nw_dst=10.0.0.20,tp_src=5001 actions=output:5
+ cookie=0x0, duration=3.392s, table=0, n_packets=27, n_bytes=1901, priority=30,udp,nw_dst=10.0.0.2,tp_src=5000 actions=output:3
+ cookie=0x0, duration=3.392s, table=0, n_packets=27, n_bytes=1904, priority=30,udp,nw_dst=10.0.0.3,tp_src=5000 actions=output:4
+ cookie=0x0, duration=3.392s, table=0, n_packets=27, n_bytes=1899, priority=30,udp,nw_dst=10.0.0.1,tp_src=5000 actions=output:2
+ cookie=0x0, duration=10.620s, table=0, n_packets=3, n_bytes=144, priority=20,udp,nw_dst=10.0.0.10,tp_dst=5001 actions=set_queue:1,output:1,CONTROLLER:65535
+ cookie=0x0, duration=10.620s, table=0, n_packets=40, n_bytes=1680, priority=10,arp actions=FLOOD
+ cookie=0x0, duration=10.620s, table=0, n_packets=8, n_bytes=784, priority=10,icmp,nw_dst=10.0.0.10 actions=output:1
+ cookie=0x0, duration=10.620s, table=0, n_packets=8, n_bytes=784, priority=10,icmp,nw_dst=10.0.0.1 actions=output:2
+ cookie=0x0, duration=10.620s, table=0, n_packets=8, n_bytes=784, priority=10,icmp,nw_dst=10.0.0.2 actions=output:3
+ cookie=0x0, duration=10.620s, table=0, n_packets=8, n_bytes=784, priority=10,icmp,nw_dst=10.0.0.3 actions=output:4
+ cookie=0x0, duration=10.620s, table=0, n_packets=8, n_bytes=784, priority=10,icmp,nw_dst=10.0.0.20 actions=output:5
+ cookie=0x0, duration=10.620s, table=0, n_packets=0, n_bytes=0, priority=10,udp,nw_dst=10.0.0.20 actions=output:5
+ cookie=0x0, duration=10.620s, table=0, n_packets=0, n_bytes=0, priority=10,udp,nw_src=10.0.0.20,nw_dst=10.0.0.10 actions=output:1
+ cookie=0x0, duration=10.620s, table=0, n_packets=40, n_bytes=3330, priority=0 actions=drop
+
+=== TEST 4: CONGESTION, BASELINE mode (no priority) ===
+[('p1', 60, 60, 0.0, 72.29, 3.48), ('p2', 60, 60, 0.0, 72.3, 3.53)]
+
+=== TEST 5: CONGESTION, DYNAMIC mode (watch controller: congestion_detected) ===
+[('p1', 60, 60, 0.0, 2.99, 1.86), ('p2', 60, 60, 0.0, 2.99, 1.86)]
+
+Flow table during congestion (now set_queue:1 appears on priority=30 rules):
+OFPST_FLOW reply (OF1.3) (xid=0x2):
+ cookie=0x0, duration=6.045s, table=0, n_packets=30, n_bytes=2263, priority=30,udp,nw_src=10.0.0.3,nw_dst=10.0.0.10,tp_dst=5000 actions=set_queue:1,output:1
+ cookie=0x0, duration=6.044s, table=0, n_packets=150, n_bytes=11299, priority=30,udp,nw_src=10.0.0.1,nw_dst=10.0.0.10,tp_dst=5000 actions=set_queue:1,output:1
+ cookie=0x0, duration=6.044s, table=0, n_packets=150, n_bytes=11309, priority=30,udp,nw_src=10.0.0.2,nw_dst=10.0.0.10,tp_dst=5000 actions=set_queue:1,output:1
+ cookie=0x0, duration=35.415s, table=0, n_packets=0, n_bytes=0, priority=10,udp,nw_dst=10.0.0.10,tp_src=5001 actions=output:1
+ cookie=0x0, duration=35.415s, table=0, n_packets=3, n_bytes=135, priority=10,udp,nw_dst=10.0.0.1,tp_src=5001 actions=output:2
+ cookie=0x0, duration=35.415s, table=0, n_packets=3, n_bytes=135, priority=10,udp,nw_dst=10.0.0.2,tp_src=5001 actions=output:3
+ cookie=0x0, duration=35.415s, table=0, n_packets=1, n_bytes=45, priority=10,udp,nw_dst=10.0.0.3,tp_src=5001 actions=output:4
+ cookie=0x0, duration=35.415s, table=0, n_packets=0, n_bytes=0, priority=10,udp,nw_dst=10.0.0.20,tp_src=5001 actions=output:5
+ cookie=0x0, duration=6.045s, table=0, n_packets=30, n_bytes=2116, priority=30,udp,nw_dst=10.0.0.3,tp_src=5000 actions=output:4
+ cookie=0x0, duration=6.044s, table=0, n_packets=150, n_bytes=10580, priority=30,udp,nw_dst=10.0.0.1,tp_src=5000 actions=output:2
+ cookie=0x0, duration=6.044s, table=0, n_packets=150, n_bytes=10586, priority=30,udp,nw_dst=10.0.0.2,tp_src=5000 actions=output:3
+ cookie=0x0, duration=35.415s, table=0, n_packets=7, n_bytes=336, priority=20,udp,nw_dst=10.0.0.10,tp_dst=5001 actions=set_queue:1,output:1,CONTROLLER:65535
+ cookie=0x0, duration=35.415s, table=0, n_packets=42, n_bytes=1764, priority=10,arp actions=FLOOD
+ cookie=0x0, duration=35.415s, table=0, n_packets=8, n_bytes=784, priority=10,icmp,nw_dst=10.0.0.10 actions=output:1
+ cookie=0x0, duration=35.415s, table=0, n_packets=8, n_bytes=784, priority=10,icmp,nw_dst=10.0.0.1 actions=output:2
+ cookie=0x0, duration=35.415s, table=0, n_packets=8, n_bytes=784, priority=10,icmp,nw_dst=10.0.0.2 actions=output:3
+ cookie=0x0, duration=35.415s, table=0, n_packets=8, n_bytes=784, priority=10,icmp,nw_dst=10.0.0.3 actions=output:4
+ cookie=0x0, duration=35.415s, table=0, n_packets=8, n_bytes=784, priority=10,icmp,nw_dst=10.0.0.20 actions=output:5
+ cookie=0x0, duration=35.415s, table=0, n_packets=7, n_bytes=1190, priority=10,udp,nw_dst=10.0.0.20 actions=output:5
+ cookie=0x0, duration=35.415s, table=0, n_packets=16462, n_bytes=24890544, priority=10,udp,nw_src=10.0.0.20,nw_dst=10.0.0.10 actions=output:1
+ cookie=0x0, duration=35.415s, table=0, n_packets=50, n_bytes=4030, priority=0 actions=drop
+
+class htb 1:1 parent 1:fffe prio 1 rate 1Mbit ceil 10Mbit burst 1564b cburst 1564b
+ Sent 24857257 bytes 16705 pkt (dropped 0, overlimits 15895 requeues 0) 
+ backlog 133056b 88p requeues 0
+ lended: 1810 borrowed: 14895 giants: 0
+ tokens: -188064 ctokens: -15091
+
+class htb 1:fffe root rate 10Mbit ceil 10Mbit burst 1500b cburst 1500b
+ Sent 24866357 bytes 16828 pkt (dropped 0, overlimits 14814 requeues 0) 
+ backlog 0b 0p requeues 0
+ lended: 14895 borrowed: 0 giants: 0
+ tokens: -28601 ctokens: -28601
+
+class htb 1:2 parent 1:fffe prio 0 rate 5Mbit ceil 10Mbit burst 1564b cburst 1564b
+ Sent 9100 bytes 123 pkt (dropped 0, overlimits 0 requeues 0) 
+ backlog 0b 0p requeues 0
+ lended: 123 borrowed: 0 giants: 0
+ tokens: 37250 ctokens: 18625
+
+
+(after the flood stops, controller prints congestion_cleared)
+[server 20:36:54] registration socket on UDP 5001
+[server 20:36:54] game socket on UDP 5000
+[server 20:36:58] REGISTERED p3 (10.0.0.3)
+[server 20:36:58] REGISTERED p2 (10.0.0.2)
+[server 20:36:58] REGISTERED p1 (10.0.0.1)
+[server 20:37:04] REGISTERED p1 (10.0.0.1)
+[server 20:37:04] REGISTERED p2 (10.0.0.2)
+[server 20:37:20] REGISTERED p2 (10.0.0.2)
+[server 20:37:20] REGISTERED p1 (10.0.0.1)
+[server 20:37:31] ------- SUMMARY -------
+[server 20:37:31] p3: received=30 lost=0 last_pos=('39', '52')
+[server 20:37:31] p2: received=150 lost=0 last_pos=('65', '77')
+[server 20:37:31] p1: received=150 lost=0 last_pos=('77', '7')
